@@ -1,1 +1,8 @@
+link a la simulación con breadboard:
+
+https://wokwi.com/projects/462669031163382785
+
+
+link a la simulación sin breadboard:
+
 https://wokwi.com/projects/462403770895809537

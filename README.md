@@ -75,7 +75,7 @@ Configurados con `INPUT_PULLUP`:
 Ubicado en:
 
 ```
-src/dice_simulator.ino
+src/main.cpp
 ```
 
 ---
@@ -123,7 +123,7 @@ wokwi/
 Ver:
 
 ```
-docs/circuitos.png
+docs/
 ```
 
 
