@@ -82,45 +82,48 @@ void tirarDado() {
   lcd.setCursor(0, 0);
   lcd.print("Rolling...");
 
-  // Animación: números cambiando rápido
-  int velocidad = 50; // milisegundos entre cambios
-  int duracion = 15;  // cuántos números mostrar
-  
+  // Generar resultado ANTES
+  int resultado = generarNumeroRandom();
+
+  int velocidad = 50;
+  int duracion = 15;
+
   for(int i = 0; i < duracion; i++) {
     lcd.setCursor(0, 1);
-    lcd.print("     "); // borrar
+    lcd.print("     ");
     lcd.setCursor(0, 1);
-    lcd.print(random(1, dados[indexDado] + 1));
-    
+
+    //  Si es el último frame entonces mostrar resultado real
+    if(i == duracion - 1) {
+      lcd.print(resultado);
+    } else {
+      lcd.print(random(1, dados[indexDado] + 1));
+    }
+
     delay(velocidad);
-    
-    // Ir más lento al final
+
     if(i > duracion - 5) {
       velocidad += 30;
     }
   }
 
-  // Resultado final
-  int resultado = generarNumeroRandom();
-
-  // Mostrar resultado con pausa dramática
   delay(200);
+
+  // Mostrar resultado final centrado
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Resultado:");
 
-  // Centrar el número con flechas
-  lcd.setCursor(0, 1);
   String texto = ">>> " + String(resultado) + " <<<";
-  int offset = (16 - texto.length()) / 2; // Calcular centro
+  int offset = (16 - texto.length()) / 2;
   lcd.setCursor(offset, 1);
   lcd.print(texto);
 
-  // Parpadeo del resultado
+  // Parpadeo
   for(int i = 0; i < 2; i++) {
     delay(150);
     lcd.setCursor(0, 1);
-    lcd.print("                "); // Borrar toda la línea
+    lcd.print("                ");
     delay(150);
     lcd.setCursor(offset, 1);
     lcd.print(texto);
