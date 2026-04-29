@@ -1,46 +1,65 @@
+#include <Arduino.h>
 #include <LiquidCrystal.h>
+
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
+// Pines botones
 const int btnRoll = 7;
 const int btnMode = 6;
 
+// Dados disponibles
 int dados[] = {4, 6, 8, 10, 12, 20};
-int indexDado = 1;
+int indexDado = 1; // empieza en D6
 
-bool lastRollState = HIGH;
-bool lastModeState = HIGH;
+// Control anti-rebote simple
+unsigned long lastPressMode = 0;
+unsigned long lastPressRoll = 0;
+const int debounceDelay = 200;
+
+// Prototipos
+void mostrarEstado();
+void tirarDado();
+
 
 void setup() {
   pinMode(btnRoll, INPUT_PULLUP);
   pinMode(btnMode, INPUT_PULLUP);
 
+  Serial.begin(9600);
+
   lcd.begin(16, 2);
 
+  // Semilla random
   randomSeed(analogRead(A0));
 
   mostrarEstado();
 }
 
 void loop() {
-  bool currentMode = digitalRead(btnMode);
-  bool currentRoll = digitalRead(btnRoll);
+  unsigned long now = millis();
 
-  if (lastModeState == HIGH && currentMode == LOW) {
+  // Botón MODE
+  if (digitalRead(btnMode) == LOW && (now - lastPressMode) > debounceDelay) {
+    lastPressMode = now;
+
     indexDado = (indexDado + 1) % 6;
     mostrarEstado();
+
+    Serial.println("MODE pressed");
   }
 
-  if (lastRollState == HIGH && currentRoll == LOW) {
+  // Botón ROLL
+  if (digitalRead(btnRoll) == LOW && (now - lastPressRoll) > debounceDelay) {
+    lastPressRoll = now;
+
     tirarDado();
+
+    Serial.println("ROLL pressed");
   }
-
-  lastModeState = currentMode;
-  lastRollState = currentRoll;
-
-  delay(20);
 }
 
+// Mostrar tipo de dado
 void mostrarEstado() {
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -51,21 +70,13 @@ void mostrarEstado() {
   lcd.print("Listo...");
 }
 
+// Tirar dado
 void tirarDado() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Rolling...");
 
-  for (int i = 0; i < 10; i++) {
-    int temp = random(1, dados[indexDado] + 1);
-
-    lcd.setCursor(0, 1);
-    lcd.print("                ");
-    lcd.setCursor(0, 1);
-    lcd.print(temp);
-
-    delay(80);
-  }
+  delay(400);
 
   int resultado = random(1, dados[indexDado] + 1);
 
